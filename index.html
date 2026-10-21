@@ -1,1 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feliz Aniversário, Jão!</title>
 
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 30px 16px;
+  background: #fffdf8;
+  color: #485934;
+  font-family: Poppins;
+  text-align: center;
+}
+
+h1 {
+  font-size: clamp(26px, 6vw, 38px);
+  font-weight: normal;
+  margin-bottom: 14px;
+}
+
+.intro {
+  margin: 0 auto 35px;
+  max-width: 450px;
+  line-height: 1.7;
+  color: #485934;
+}
+
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  gap: 28px 18px;
+  max-width: 850px;
+  margin: auto;
+}
+
+.cartinha {
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  min-width: 0;
+}
+
+.envelope {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.35;
+  background: #485934;
+  border-radius: 5px;
+  box-shadow: 0 5px 12px #48593430;
+  transition: transform .25s;
+  perspective: 500px;
+}
+
+.envelope:hover {
+  transform: translateY(-5px);
+}
+
+.corpo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #485934;
+  border-radius: 5px;
+}
+
+.corpo::before,
+.corpo::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 72%;
+  height: 75%;
+  background: #39482a;
+}
+
+.corpo::before {
+  left: 0;
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
+
+.corpo::after {
+  right: 0;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+.aba {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  background: #596d40;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top;
+  transition: transform .4s ease;
+  z-index: 3;
+}
+
+.selo {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  font-size: 27px;
+  color: #fffdf8;
+  transition: opacity .2s;
+}
+
+.cartinha:hover .aba {
+  transform: rotateX(180deg);
+}
+
+.cartinha:hover .selo {
+  opacity: 0;
+}
+
+.legenda {
+  display: block;
+  margin-top: 11px;
+  font-size: 14px;
+  color: #485934;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #172819aa;
+}
+
+.modal.aberto {
+  display: flex;
+}
+
+.papel {
+  background: #fffdf8;
+  border: 1px solid #d9dfcf;
+  border-radius: 8px;
+  padding: 28px 22px;
+  width: min(100%, 440px);
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 35px #0003;
+}
+
+.papel h2 {
+  font-weight: normal;
+  color: #485934;
+}
+
+.papel p {
+  line-height: 1.8;
+  white-space: pre-wrap;
+  color: #485934;
+}
+
+.fechar {
+  border: 1px solid #485934;
+  border-radius: 22px;
+  background: #485934;
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  font: inherit;
+}
+
+@media (max-width: 360px) {
+  .galeria {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .envelope, .aba, .selo {
+    transition: none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<h1>Feliz Aniversário, Jão!</h1>
+
+<p class="intro">
+Cada envelope guarda uma homenagem feita com carinho.
+Toque para abrir as cartinhas. ♡
+</p>
+
+<div class="galeria" id="galeria"></div>
+
+<div class="modal" id="modal" role="dialog"
+aria-modal="true" aria-labelledby="titulo">
+  <div class="papel">
+    <h2 id="titulo">Uma cartinha para você</h2>
+    <p id="mensagem"></p>
+    <button class="fechar" id="fechar" type="button">
+      Fechar carta
+    </button>
+  </div>
+</div>
+
+<script>
+const cartas = [
+  {
+    titulo: "Cartinha de exemplo 1",
+    mensagem: "Em breve, uma carta cheia de carinho vai aparecer aqui. ♡"
+  },
+  {
+    titulo: "Cartinha de exemplo 2",
+    mensagem: "Este espaço será preenchido com as palavras dos fãs."
+  },
+  {
+    titulo: "Cartinha de exemplo 3",
+    mensagem: "Cada envelope vai guardar uma homenagem especial."
+  },
+  {
+    titulo: "Cartinha de exemplo 4",
+    mensagem: "Em breve, mais cartas para celebrar com amor."
+  }
+];
+
+const galeria = document.getElementById("galeria");
+const modal = document.getElementById("modal");
+const titulo = document.getElementById("titulo");
+const mensagem = document.getElementById("mensagem");
+const fechar = document.getElementById("fechar");
+
+cartas.forEach((carta, indice) => {
+  const botao = document.createElement("button");
+  botao.className = "cartinha";
+  botao.type = "button";
+  botao.setAttribute("aria-label", "Abrir " + carta.titulo);
+
+  botao.innerHTML = `
+    <div class="envelope">
+      <div class="corpo"></div>
+      <div class="aba"></div>
+      <span class="selo">♡</span>
+    </div>
+    <span class="legenda">carta ${indice + 1}</span>
+  `;
+
+  botao.addEventListener("click", () => {
+    titulo.textContent = carta.titulo;
+    mensagem.textContent = carta.mensagem;
+    modal.classList.add("aberto");
+    fechar.focus();
+  });
+
+  galeria.appendChild(botao);
+});
+
+function fecharModal() {
+  modal.classList.remove("aberto");
+}
+
+fechar.addEventListener("click", fecharModal);
+
+modal.addEventListener("click", (evento) => {
+  if (evento.target === modal) fecharModal();
+});
+
+document.addEventListener("keydown", (evento) => {
+  if (evento.key === "Escape") fecharModal();
+});
+</script>
+
+</body>
+</html>
